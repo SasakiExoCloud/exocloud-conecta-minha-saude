@@ -1,18 +1,55 @@
 import '@/styles/index.scss'
+import axios from 'axios'
 import Image from 'next/image'
 import Link from 'next/link'
+import { useRouter } from 'next/router'
 import { useState } from 'react'
 import { useForm } from 'react-hook-form'
 import { FaEye, FaEyeSlash } from 'react-icons/fa'
 
+import { useUser } from '@/contexts/UserContext'
+
 import ImagePage from '../../images/ConectaMinhaSaude2.png'
 
 export default function Login() {
+  const { user, setUser } = useUser()
+  const router = useRouter()
   const [visiblePassword, setVisiblePassword] = useState(false)
 
   const { register, handleSubmit } = useForm()
 
-  const onSubmit = data => console.log(data)
+  // const onSubmit = data => console.log(data)
+
+  // Função criada unicamente com a função de debug, chamada pelo botão na tela de login para verificar o estado
+  // Tal alternativa foi optada por mim, devido ao UserContext do Typescript não estar atualizando no escopo
+  // da função responsável pelo fetch mesmo após aplicar abordagem assíncrona
+  const checkUser = () => {
+    console.log('Retorno do Context: ', user)
+  }
+
+  const onSubmit = async data => {
+    // Teste de contexto global
+    console.log('O que será colocado no Context: ', data)
+    try {
+      const response = await axios.post(
+        'https://wgr816ve35.execute-api.us-east-2.amazonaws.com/prod/auth',
+        data
+      )
+      console.log('Resposta: ', response.data)
+      console.log('Token do usuário: ', response.data.token)
+      setUser(data)
+      // Teste de local storage (cookie é uma abordagem melhor)
+      localStorage.setItem('user-token', JSON.stringify(response.data.token))
+      router.push('/dashboard')
+    } catch (error) {
+      // É apenas para fins de teste que utilizo o push e a alteração do estado global
+      // mesmo após o erro para testar se a implementação funciona de maneira adequada
+      // Já que tenho limitações no que consigo fazer por falta de conectividade a API.
+      console.error('Erro ao enviar os dados: ', error)
+      // setUser(data)
+      // router.push('/dashboard')
+    }
+  }
 
   const handlePassword = () => {
     console.log('entrei na funcao')
@@ -74,6 +111,13 @@ export default function Login() {
             </Link>
           </span>
         </form>
+        <button
+          className="mt-6 rounded bg-blue-600 p-5 text-white hover:bg-blue-700"
+          type="button"
+          onClick={checkUser}
+        >
+          Verificar estado
+        </button>
       </div>
     </div>
   )
