@@ -16,11 +16,11 @@ interface UserContextType {
 
 const UserContext = createContext<UserContextType>({
   user: null,
-  setUser: () => {},
+  setUser: () => { },
   username: '',
-  setUsername: () => {},
+  setUsername: () => { },
   isLogged: false,
-  setIsLogged: () => {}
+  setIsLogged: () => { }
 })
 
 interface UserProviderProps {
