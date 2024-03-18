@@ -1,21 +1,39 @@
 import '@/styles/index.scss'
+import axios from 'axios'
 import Image from 'next/image'
 import Link from 'next/link'
+import { useRouter } from 'next/router'
 import { useState } from 'react'
 import { useForm } from 'react-hook-form'
 import { FaEye, FaEyeSlash } from 'react-icons/fa'
 
+import { useUser } from '@/contexts/UserContext'
+
 import ImagePage from '../../images/ConectaMinhaSaude2.png'
 
 export default function Login() {
+  const { setUser, setUsername } = useUser()
+  const router = useRouter()
   const [visiblePassword, setVisiblePassword] = useState(false)
 
   const { register, handleSubmit } = useForm()
 
-  const onSubmit = data => console.log(data)
+  const onSubmit = async data => {
+    try {
+      const response = await axios.post(
+        'https://wgr816ve35.execute-api.us-east-2.amazonaws.com/prod/auth',
+        data
+      )
+      setUser(data)
+      setUsername(response.data.user.name)
+      localStorage.setItem('user-token', JSON.stringify(response.data.token))
+      router.back()
+    } catch (error) {
+      console.error('Erro ao enviar os dados: ', error)
+    }
+  }
 
   const handlePassword = () => {
-    console.log('entrei na funcao')
     setVisiblePassword(!visiblePassword)
   }
 
@@ -65,7 +83,7 @@ export default function Login() {
             Entrar
           </button>
           <span className="mt-6 text-base text-gray-500">
-            Não tem uma conta?{' '}
+            Não tem uma conta?
             <Link
               href={'/create-account'}
               className="text-blue-500 underline hover:text-blue-700"
