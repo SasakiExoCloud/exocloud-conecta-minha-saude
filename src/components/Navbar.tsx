@@ -2,7 +2,7 @@ import '@/styles/index.scss'
 import './Navbar.css'
 import Image from 'next/image'
 import React, { useState } from 'react'
-
+import { CgMenu } from 'react-icons/cg'
 
 import ImagePage from '../images/ConectaMinhaSaude2.png'
 
@@ -28,10 +28,10 @@ const Navbar: React.FC<NavbarProps> = ({
   const userName = `${name.split(' ')[0]} ${name.split(' ')[1]}`
 
   return (
-    <nav className="navbar flex flex-row items-center justify-between px-10 container mx-auto">
+    <nav className="navbar mx-auto flex flex-row items-center justify-between  bg-[#00BF63] px-8 text-white">
       <div className="navbar-left">
         <div className="dropdown" onClick={toggleDropdown}>
-          <button className="dropbtn">Dropdown</button>
+          <CgMenu className="size-6 text-black cursor-pointer" />
           {isDropdownOpen && (
             <div className="dropdown-content">
               <a href="#">Área do Doutor</a>
@@ -46,8 +46,18 @@ const Navbar: React.FC<NavbarProps> = ({
       </div>
       {!loggedIn ? (
         <div className="navbar-right space-x-4">
-          <button onClick={onLogin}>Entrar</button>
-          <button onClick={onRegister}>Registrar</button>
+          <button
+            className="rounded bg-[#00a181] px-4 py-1 font-bold text-white hover:bg-[#004651]"
+            onClick={onLogin}
+          >
+            Entrar
+          </button>
+          <button
+            className="rounded bg-[#00a181] px-4 py-1 font-bold text-white hover:bg-[#004651]"
+            onClick={onRegister}
+          >
+            Registrar
+          </button>
         </div>
       ) : (
         <div className="navbar-right space-x-4">

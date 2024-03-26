@@ -6,17 +6,33 @@ import { useRouter } from 'next/router'
 import { useState } from 'react'
 import { useForm } from 'react-hook-form'
 import { FaEye, FaEyeSlash } from 'react-icons/fa'
+import * as yup from 'yup'
 
 import { useUser } from '@/contexts/UserContext'
+import { yupResolver } from '@hookform/resolvers/yup'
 
 import ImagePage from '../../images/ConectaMinhaSaude2.png'
+
+const schema = yup.object().shape({
+  email: yup
+    .string()
+    .email('Digite um e-mail válido')
+    .required('Digite seu e-mail'),
+  password: yup.string().required('Digite a senha')
+})
 
 export default function Login() {
   const { setUser, setUsername } = useUser()
   const router = useRouter()
   const [visiblePassword, setVisiblePassword] = useState(false)
 
-  const { register, handleSubmit } = useForm()
+  const {
+    register,
+    handleSubmit,
+    formState: { errors }
+  } = useForm({
+    resolver: yupResolver(schema)
+  })
 
   const onSubmit = async data => {
     try {
@@ -39,7 +55,7 @@ export default function Login() {
 
   return (
     <div className="flex min-h-screen w-full flex-col items-center justify-center">
-      <Image src={ImagePage} alt="conecta minha saude" className="size-72" />
+      <Image src={ImagePage} alt="conecta minha saude" className="size-72 cursor-pointer" onClick={() => router.back()} />
       <div className="flex w-1/2 flex-col items-center justify-center">
         <h1 className="py-5 text-4xl font-semibold tracking-wide text-gray-800">
           Faça seu Login
@@ -50,6 +66,7 @@ export default function Login() {
             className="mt-6 rounded border-2 border-solid border-gray-300 p-5 outline-none"
             {...register('email')}
           />
+          {errors.email && <p>{errors.email.message}</p>}
           <div className="mt-6 flex items-center  justify-between rounded border-2 border-solid border-gray-300 p-5 ">
             <input
               placeholder="Senha"
@@ -73,6 +90,7 @@ export default function Login() {
               />
             )}
           </div>
+          {errors.password && <p>{errors.password.message}</p>}
           <span className="mt-6 cursor-pointer text-base text-gray-500 underline hover:text-gray-700">
             <Link href={'/remember-login'}>Esqueceu sua senha? </Link>
           </span>
